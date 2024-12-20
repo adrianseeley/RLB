@@ -17,5 +17,20 @@ namespace RLB
         {
             return Math.Max(min, Math.Min(max, value));
         }
+
+        public static float Wrap(float value, float min, float max)
+        {
+            // wrap x so m <= x <= M
+            float diff = max - min;
+            while (value > max)
+            {
+                value -= diff;
+            }
+            while (value < min)
+            {
+                value += diff;
+            }
+            return value;
+        }
     }
 }
