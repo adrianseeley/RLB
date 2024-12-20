@@ -130,6 +130,57 @@
             }
         }
 
+        public static void DrawArgmaxActionIndicator(byte[,,] pixels, int actionIndex, int actionCount)
+        {
+            int insetX = 10;
+            int insetY = 10;
+            int segmentWidth = 40;
+            int segmentHeight = 5;
+            int space = 3;
+            for (int i = 0; i < actionCount; i++)
+            {
+                int x = insetX;
+                int y = insetY + i * (segmentHeight + space);
+                if (i == actionIndex)
+                {
+                    FillRect(pixels, x, y, segmentWidth, segmentHeight, 0, 255, 0);
+                }
+                else
+                {
+                    FillRect(pixels, x, y, segmentWidth, segmentHeight, 255, 0, 0);
+                }
+                DrawRect(pixels, x, y, segmentWidth, segmentHeight, 0, 0, 0);
+            }
+        }
+
+        public static void DrawContinuousActionIndicators(byte[,,] pixels, float[] action, float[] actionMins, float[] actionMaxs)
+        {
+            int insetX = 10;
+            int insetY = 10;
+            int sideWidth = 20;
+            int segmentHeight = 5;
+            int space = 3;
+
+            for (int i = 0; i < action.Length; i++)
+            {
+                float normal = (action[i] - actionMins[i]) / (actionMaxs[i] - actionMins[i]);
+                int x = insetX;
+                int y = insetY + i * (segmentHeight + space);
+                int width = (int)(normal * sideWidth);
+                if (action[i] < 0)
+                {
+                    FillRect(pixels, x + sideWidth - width, y, width, segmentHeight, 255, 0, 0);
+                }
+                else
+                {
+                    FillRect(pixels, x + sideWidth, y, width, segmentHeight, 0, 255, 0);
+                }
+                DrawRect(pixels, x, y, sideWidth, segmentHeight, 0, 0, 0);
+                DrawRect(pixels, x + sideWidth, y, sideWidth, segmentHeight, 0, 0, 0);
+            }
+        }
+
+
         public static void SaveToBMP(string filename, byte[,,] pixels)
         {
             int height = pixels.GetLength(0);

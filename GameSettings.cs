@@ -12,6 +12,8 @@
         public int stateSize;
         public int observationSize;
         public int actionSize;
+        public float[] actionMins;
+        public float[] actionMaxs;
         public int renderWidth;
         public int renderHeight;
         public ResetInPlaceDelegate resetInPlace;
@@ -21,11 +23,13 @@
         public RenderInPlaceDelegate renderInPlace;
         public RenderDelegate render;
 
-        public GameSettings(int stateSize, int observationSize, int actionSize, int renderWidth, int renderHeight, ResetInPlaceDelegate resetInPlace, ResetDelegate reset, StepInPlaceDelegate stepInPlace, StepDelegate step, RenderInPlaceDelegate renderInPlace, RenderDelegate render)
+        public GameSettings(int stateSize, int observationSize, int actionSize, float[] actionMins, float[] actionMaxs, int renderWidth, int renderHeight, ResetInPlaceDelegate resetInPlace, ResetDelegate reset, StepInPlaceDelegate stepInPlace, StepDelegate step, RenderInPlaceDelegate renderInPlace, RenderDelegate render)
         {
             this.stateSize = stateSize;
             this.observationSize = observationSize;
             this.actionSize = actionSize;
+            this.actionMins = actionMins;
+            this.actionMaxs = actionMaxs;
             this.renderWidth = renderWidth;
             this.renderHeight = renderHeight;
             this.resetInPlace = resetInPlace;

@@ -21,6 +21,8 @@
         public static float G = 9.8f;
         public static float TORQUE_NOISE_MAX = 0f;
         public static float[] TORQUES = new float[] { -1f, 0f, 1f };
+        public static float[] ACTION_MINS = new float[] { 0f, 0f, 0f };
+        public static float[] ACTION_MAXS = new float[] { 1f, 1f, 1f };
 
         public static GameSettings Create()
         {
@@ -28,6 +30,8 @@
                 stateSize: STATE_SIZE,
                 observationSize: OBSERVATION_SIZE,
                 actionSize: ACTION_SIZE,
+                actionMins: ACTION_MINS, 
+                actionMaxs: ACTION_MAXS,
                 renderWidth: RENDER_WIDTH,
                 renderHeight: RENDER_HEIGHT,
                 resetInPlace: ResetInPlace,
@@ -161,10 +165,10 @@
             Bitmap.DrawCircle(pixels, cx, cy, 5, 0, 0, 0);
 
             // draw first link
-            Bitmap.DrawLine(pixels, cx, cy, x1, y1, 0, 0, 0);
+            Bitmap.DrawLine(pixels, cx, cy, x1, y1, 255, 0, 0);
 
             // draw second link
-            Bitmap.DrawLine(pixels, x1, y1, x2, y2, 0, 0, 255);
+            Bitmap.DrawLine(pixels, x1, y1, x2, y2, 255, 0, 0);
 
             // draw target line: when (-cos(theta1)-cos(theta2+theta1))>1 means success
             // since max height is 2 (fully up), threshold at 1 means halfway up.
@@ -185,28 +189,7 @@
                 }
             }
 
-            int aLeft = cx - 150;
-            int aRight = cx + 150;
-            int aY = RENDER_HEIGHT - 50;
-            
-            // draw a line for actions
-            Bitmap.DrawLine(pixels, aLeft, aY, aRight, aY, 0, 0, 0);
-            
-            // split into three sections
-            int segmentWidth = (aRight - aLeft) / 3;
-            int seg0Center = aLeft + segmentWidth / 2;
-            int seg1Center = aLeft + segmentWidth + segmentWidth / 2;
-            int seg2Center = aLeft + 2 * segmentWidth + segmentWidth / 2;
-
-            // mark each action region
-            Bitmap.DrawLine(pixels, aLeft, aY - 10, aLeft, aY + 10, 0, 0, 0);
-            Bitmap.DrawLine(pixels, aLeft + segmentWidth, aY - 10, aLeft + segmentWidth, aY + 10, 0, 0, 0);
-            Bitmap.DrawLine(pixels, aLeft + 2 * segmentWidth, aY - 10, aLeft + 2 * segmentWidth, aY + 10, 0, 0, 0);
-            Bitmap.DrawLine(pixels, aRight, aY - 10, aRight, aY + 10, 0, 0, 0);
-
-            // fill selected action with a blue box
-            int selectedCenter = (aIndex == 0) ? seg0Center : (aIndex == 1) ? seg1Center : seg2Center;
-            Bitmap.FillRect(pixels, selectedCenter - 10, aY - 5, 20, 10, 0, 0, 255);
+            Bitmap.DrawArgmaxActionIndicator(pixels, aIndex, ACTION_SIZE);
         }
 
         public static void Render(in Random random, in int step, in float[] state, in float[] observation, in float[] action, out byte[,,] pixels)

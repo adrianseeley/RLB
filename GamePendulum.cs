@@ -14,10 +14,26 @@
         public static float G = 10.0f;
         public static float M = 1.0f;
         public static float L = 1.0f;
+        public static float[] ACTION_MINS = new float[] { -MAX_TORQUE };
+        public static float[] ACTION_MAXS = new float[] { MAX_TORQUE };
 
         public static GameSettings Create()
         {
-            return new GameSettings(stateSize: STATE_SIZE, observationSize: OBSERVATION_SIZE, actionSize: ACTION_SIZE, renderWidth: RENDER_WIDTH, renderHeight: RENDER_HEIGHT, resetInPlace: ResetInPlace, reset: Reset, stepInPlace: StepInPlace, step: Step, renderInPlace: RenderInPlace, render: Render);
+            return new GameSettings(
+                stateSize: STATE_SIZE, 
+                observationSize: OBSERVATION_SIZE, 
+                actionSize: ACTION_SIZE, 
+                actionMins: ACTION_MINS, 
+                actionMaxs: ACTION_MAXS, 
+                renderWidth: RENDER_WIDTH, 
+                renderHeight: RENDER_HEIGHT, 
+                resetInPlace: ResetInPlace, 
+                reset: Reset, 
+                stepInPlace: StepInPlace, 
+                step: Step, 
+                renderInPlace: RenderInPlace, 
+                render: Render
+            );
         }
 
         public static void StateToObservation(in float[] state, ref float[] observation)
@@ -97,42 +113,8 @@
             // draw circle around center
             Bitmap.DrawCircle(pixels, cx, cy, 10, 0, 0, 0);
 
-            // find ends of action bar
-            int aLeft = cx - 100;
-            int aRight = cx + 100;
-            int aMiddleX = (aLeft + aRight) / 2;
-            int aY = RENDER_HEIGHT - 50;
-
-            // mark action background line
-            Bitmap.DrawLine(pixels, aLeft, aY, aRight, aY, 0, 0, 0);
-
-            // mark center of action line
-            Bitmap.DrawLine(pixels, aMiddleX, aY - 10, aMiddleX, aY + 10, 0, 0, 0);
-
-            // mark left of action line
-            Bitmap.DrawLine(pixels, aLeft, aY - 10, aLeft, aY + 10, 0, 0, 0);
-
-            // mark right of action line
-            Bitmap.DrawLine(pixels, aRight, aY - 10, aRight, aY + 10, 0, 0, 0);
-
-            // if we have an action magnitude to draw
-            if (action[0] != 0f)
-            {
-                // calculate action box width
-                int actionWidth = (int)((Math.Abs(action[0]) / 2f) * 100f);
-
-                // if action is negative
-                if (action[0] < 0f)
-                {
-                    // draw action box to the left
-                    Bitmap.FillRect(pixels, aMiddleX - actionWidth, aY - 5, actionWidth, 10, 0, 0, 255);
-                }
-                else
-                {
-                    // draw action box to the right
-                    Bitmap.FillRect(pixels, aMiddleX, aY - 5, actionWidth, 10, 0, 0, 255);
-                }
-            }
+            // draw action indicator
+            Bitmap.DrawContinuousActionIndicators(pixels, action, ACTION_MINS, ACTION_MAXS);
         }
 
         public static void Render(in Random random, in int step, in float[] state, in float[] observation, in float[] action, out byte[,,] pixels)
